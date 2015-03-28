@@ -36,5 +36,13 @@ function parseFullText(xml) {
     console.log(fundingStatement);
 };
 
+	var div = $("<div>", {id: "funding"});
+	var fundingText = "Funding";
+	$(div).append(fundingText);
+	$(div).css({"color": "red", "font-size":"large", "font-weight":"bold"});
+
+	$('.abstr').prepend(div);
+	
+
 
 
