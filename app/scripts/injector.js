@@ -10,6 +10,29 @@
 // Add some box to the top of the page with a hover over to display the funding-statement text
 // Add conflict of interest statement, highlighting authors names
 $(document).ready(function() {
+    $.extend($.expr[":"], {
+        "contains": function(elem, i, match, array) {
+            return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+        }
+    });
+    
+    var data = {
+        fundingStatement: "",
+        conflictStatement: "",
+        update: function() {
+            $('#funding').html(data.fundingStatement + '<br>' + data.conflictStatement);
+        },
+        parseFullText: function(html) {
+            data.fundingStatement = $($(html).find("h3:contains('Funding'), h2:contains('Funding')").next()[0]).text();
+            data.update();    
+        },
+        parseFullXML: function(xml) {
+            data.fundingStatement = $(xml).find("funding-statement").text();
+            data.conflictStatement = $.trim($(xml).find("fn[fn-type='conflict']").text());
+            data.update();
+        }
+    };
+    
     var pmcElt = $('.status_icon');
     if (pmcElt.length > 0) {
         var texturl= pmcElt.attr('href');
@@ -20,31 +43,6 @@ $(document).ready(function() {
     $('#funding').css({"color": "red", "font-size":"large", "font-weight":"bold"});
     
     // request full text from PMC
-    $.ajax({type:"GET", url:texturl, success: parseFullText});
-    $.ajax({type:"GET", url:xmlurl, dataType:"xml", success: parseFullXML});
+    $.ajax({type:"GET", url:texturl, success: data.parseFullText});
+    $.ajax({type:"GET", url:xmlurl, dataType:"xml", success: data.parseFullXML});
 });
-
-
-function parseFullText(html) {
-    var data = {};
-    data.fundingStatement = $($(html).find("h3:contains('Funding'), h2:contains('Funding')").next()[0]).text()
-
-    $('#funding').text(data.fundingStatement);
-    
-};
-
-function parseFullXML(xml) {
-    var data = {};
-    
-    data.fundingStatement = $(xml).find("funding-statement").text();
-    data.conflictStatement = $.trim($(xml).find("fn[fn-type='conflict']").text());
-    
-    $('#funding').text(data.fundingStatement);
-    
-};
-
-
-	
-
-
-
