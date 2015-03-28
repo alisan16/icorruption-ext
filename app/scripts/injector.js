@@ -20,6 +20,14 @@ if (pmcElt.length > 0) {
     var pmcid = substring[3].substring(3);
     console.log(pmcid);
 
+	var div = $("<div>", {id: "funding"});
+	var fundingText = "Funding";
+	$(div).append(fundingText);
+	$(div).css({"color": "red", "font-size":"large", "font-weight":"bold"});
+
+	$('.abstr').prepend(div);
+	
+
 
     
 }
