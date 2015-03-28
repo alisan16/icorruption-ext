@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "icorruption-ext",
+    "description": "The name of the application"
+  },
+  "appDescription": {
+    "message": "A PubMed plugin",
+    "description": "The description of the application"
+  }
+}
