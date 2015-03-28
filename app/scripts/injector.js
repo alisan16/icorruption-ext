@@ -14,12 +14,13 @@
 var link = $('.status_icon').attr('href');
 console.log(link); 
 console.log(link.length);
-# DO EVERYTHING IN HERE
+// DO EVERYTHING IN HERE
 if (link.length > 0) {
-    var pmcid = link.split('/')[3];
+    var substring = link.split('/');
+    var pmcid = substring[3].substring(3);
     console.log(pmcid);
 
-    
+
     
 }
 
