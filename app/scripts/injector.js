@@ -9,4 +9,17 @@
 // If funding-source was NIH, have some indicator
 // Add some box to the top of the page with a hover over to display the funding-statement text
 // Add conflict of interest statement, highlighting authors names
-console.log("totally working")
+
+
+var link = $('.status_icon').attr('href');
+console.log(link); 
+console.log(link.length);
+# DO EVERYTHING IN HERE
+if (link.length > 0) {
+    var pmcid = link.split('/')[3];
+    console.log(pmcid);
+
+    
+    
+}
+
