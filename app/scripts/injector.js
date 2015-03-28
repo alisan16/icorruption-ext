@@ -12,35 +12,35 @@
 $(document).ready(function() {
     var pmcElt = $('.status_icon');
     if (pmcElt.length > 0) {
-        var link = pmcElt.attr('href');
-    } else {
-        return
-    }
+        var texturl= pmcElt.attr('href');
+    } else return;
+    var xmlurl = 'http://www.pubmedcentral.nih.gov/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:' + texturl.split('/')[3].substring(3) + '&metadataPrefix=pmc';
 
+    $('.abstr').prepend($("<div>", {id: "funding"}));
+    $('#funding').css({"color": "red", "font-size":"large", "font-weight":"bold"});
+    
     // request full text from PMC
-    $.ajax({type:"GET", url:link, dataType:"xml", success: parseFullText});
+    $.ajax({type:"GET", url:texturl, success: parseFullText});
+    $.ajax({type:"GET", url:xmlurl, dataType:"xml", success: parseFullXML});
 });
 
 
-function parseFullText(xml) {
-    var data = {}
-    // get funding statement
-   
-    messages = [];
-    $(xml).find("h3:contains('Funding')").next().each(function() {
-        messages.push($(this).text());
-    });
-    console.log(messages);
-    data.fundingStatement = messages.join('');
-    
-    console.log(data);
-    
-    var div = $("<div>", {id: "funding"});
-	var fundingText = "Funding";
-	$(div).append(data.fundingStatement);
-	$(div).css({"color": "red", "font-size":"large", "font-weight":"bold"});
+function parseFullText(html) {
+    var data = {};
+    data.fundingStatement = $($(html).find("h3:contains('Funding'), h2:contains('Funding')").next()[0]).text()
 
-	$('.abstr').prepend(div);
+    $('#funding').text(data.fundingStatement);
+    
+};
+
+function parseFullXML(xml) {
+    var data = {};
+    
+    data.fundingStatement = $(xml).find("funding-statement").text();
+    data.conflictStatement = $.trim($(xml).find("fn[fn-type='conflict']").text());
+    
+    $('#funding').text(data.fundingStatement);
+    
 };
 
 
