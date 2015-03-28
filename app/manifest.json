@@ -13,5 +13,5 @@
       "matches": ["http://www.ncbi.nlm.nih.gov/*"],
       "js": ["scripts/jquery.min.js","scripts/injector.js"]
     }
-  ],
+  ]
 }
