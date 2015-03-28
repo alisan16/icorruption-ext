@@ -31,17 +31,20 @@ $(document).ready(function() {
 
 
 function parseFullText(xml) {
+    var data = {}
     // get funding statement
-    var fundingStatement = $(xml).find("funding-statement").text();
-    console.log(fundingStatement);
-};
-
-	var div = $("<div>", {id: "funding"});
+    data.fundingStatement = $(xml).find("funding-statement").text();
+    data.conflictStatement = $.trim($(xml).find("fn[fn-type='conflict']").text());
+    
+    var div = $("<div>", {id: "funding"});
 	var fundingText = "Funding";
-	$(div).append(fundingText);
+	$(div).append(data.fundingStatement);
 	$(div).css({"color": "red", "font-size":"large", "font-weight":"bold"});
 
 	$('.abstr').prepend(div);
+};
+
+
 	
 
 
