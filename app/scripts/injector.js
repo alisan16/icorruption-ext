@@ -9,4 +9,22 @@
 // If funding-source was NIH, have some indicator
 // Add some box to the top of the page with a hover over to display the funding-statement text
 // Add conflict of interest statement, highlighting authors names
-console.log("totally working")
+$(document).ready(function() {
+    var PMCid = '3979754';
+
+    // get PMC ID
+    var fulltexturl = 'http://www.pubmedcentral.nih.gov/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:' + PMCid + '&metadataPrefix=pmc';
+    console.log(fulltexturl);
+
+    // request full text from OAI and parse with parseFullText
+    $.ajax({type:"GET", url:fulltexturl, dataType:"xml", success: parseFullText});
+});
+
+
+function parseFullText(xml) {
+    // get funding statement
+    var fundingStatement = $(xml).find("funding-statement").text();
+    console.log(fundingStatement);
+};
+
+
