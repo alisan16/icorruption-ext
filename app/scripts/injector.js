@@ -1,4 +1,4 @@
-// Check for PMC full text link
+ï»¿// Check for PMC full text link
 // Navigate to PMC full text page
 // Get and parse full text XML from OAI
 // https://developer.chrome.com/extensions/xhr need this to do cross-domain requests! e.g. from OAI
@@ -8,4 +8,5 @@
 // On the current Pubmed Abstract page:
 // If funding-source was NIH, have some indicator
 // Add some box to the top of the page with a hover over to display the funding-statement text
-// Add conflict of interest statement, highlighting authors’ names
+// Add conflict of interest statement, highlighting authors names
+console.log("totally working")
