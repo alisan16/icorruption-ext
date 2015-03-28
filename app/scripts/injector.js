@@ -10,10 +10,19 @@
 // Add some box to the top of the page with a hover over to display the funding-statement text
 // Add conflict of interest statement, highlighting authors names
 $(document).ready(function() {
-    var PMCid = '3979754';
+    // DO EVERYTHING IN HERE
+    var pmcElt = $('.status_icon');
+    if (pmcElt.length > 0) {
+        var link = pmcElt.attr('href');
+        console.log(link); 
+        var substring = link.split('/');
+        var pmcid = substring[3].substring(3);
+        console.log(pmcid);
+    } else {
+        return
+    }
 
-    // get PMC ID
-    var fulltexturl = 'http://www.pubmedcentral.nih.gov/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:' + PMCid + '&metadataPrefix=pmc';
+    var fulltexturl = 'http://www.pubmedcentral.nih.gov/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:' + pmcid + '&metadataPrefix=pmc';
     console.log(fulltexturl);
 
     // request full text from OAI and parse with parseFullText
@@ -26,5 +35,6 @@ function parseFullText(xml) {
     var fundingStatement = $(xml).find("funding-statement").text();
     console.log(fundingStatement);
 };
+
 
 
