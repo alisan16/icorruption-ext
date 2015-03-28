@@ -11,7 +11,10 @@
   "content_scripts": [
     {
       "matches": ["http://www.ncbi.nlm.nih.gov/*"],
-      "js": ["scripts/jquery.min.js", "scripts/injector.js"]
+      "js": ["scripts/injector.js"]
     }
+  ],
+  "web_accessible_resources": [
+    "scripts/jquery.min.js"
   ]
 }
