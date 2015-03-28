@@ -8,16 +8,10 @@
     "128": "images/icon-128.png"
   },
   "default_locale": "en",
-  "background": {
-    "scripts": [
-      "scripts/chromereload.js",
-      "scripts/background.js"
-    ]
-  },
   "content_scripts": [
     {
       "matches": ["http://www.ncbi.nlm.nih.gov/*"],
-      "js": ["scripts/injector.js"]
+      "js": ["scripts/jquery.min.js", "scripts/injector.js"]
     }
   ]
 }
