@@ -11,11 +11,11 @@
 // Add conflict of interest statement, highlighting authors names
 
 
-var link = $('.status_icon').attr('href');
-console.log(link); 
-console.log(link.length);
+var pmcElt = $('.status_icon');
 // DO EVERYTHING IN HERE
-if (link.length > 0) {
+if (pmcElt.length > 0) {
+    var link = pmcElt.attr('href');
+    console.log(link); 
     var substring = link.split('/');
     var pmcid = substring[3].substring(3);
     console.log(pmcid);
