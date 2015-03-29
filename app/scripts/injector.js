@@ -51,8 +51,11 @@ $(document).ready(function() {
     } else return;
     var xmlurl = 'http://www.pubmedcentral.nih.gov/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:' + texturl.split('/')[3].substring(3) + '&metadataPrefix=pmc';
 
-    $('.abstr').prepend($("<div>", {id: "funding"}));
-    $('#funding').css({"color": "red", "font-size":"large", "font-weight":"bold"});
+    $('.rprt_all').prepend($("<div>", {id: "funding"}));
+    $('#funding').css({
+      "color": "red", "font-size":"large", "font-weight":"bold",
+	  "border": "solid 1px", "padding": "8px"	
+    });
     
     // request full text from PMC
     $.ajax({type:"GET", url:texturl, success: data.parseFullText});
