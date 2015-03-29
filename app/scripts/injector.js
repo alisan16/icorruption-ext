@@ -19,29 +19,42 @@ $(document).ready(function() {
     var data = {
         fundingStatement: "",
         conflictStatement: "",
-        update: function() {
-            $('#funding').html(data.fundingStatement + '<br>' + data.conflictStatement);
+        redraw: function() {
+            $('#funding').html(this.fundingStatement + '<br>' + this.conflictStatement);
+        },
+        setFundingStatement: function(fs) {
+            if (this.fundingStatement == "" && fs) {
+                this.fundingStatement = fs;
+            }
+        },
+        setConflictStatement: function(cs) {
+            if (this.conflictStatement == "" && cs) {
+                this.conflictStatement = cs;
+            }
         },
         parseFullText: function(html) {
             // data.fundingStatement = $(html).find("h3:contains('Funding'), h2:contains('Funding')").nextUntil("div.tsec").text()
             // data.update();
             var matches = [];
-            $(".content.article > div > .sec", $(html)).each(function(i, sec) {
-                var secid = $(sec).attr('id')
-                var secmatches = $(sec).text().match(/funding/gi);
-                if (secmatches && secmatches.length > 0 && secid.match(/ref-list|body|abstract/gi) == null) {
-                    $("h2, h3, br", $(sec)).remove();
-                    matches.push($(sec).html());
-                };
+            $(".content.article > div .sec", $(html)).each(function(i, sec) {
+                var secid = $(sec).attr('id');
+                var secmatches = $(sec).text().match(/fund(ed|ing|s)|(supported|granted|provided|sponsored) by|financial (|support)/gi);
+                if (secmatches && secmatches.length > 0 && (!secid || secid.match(/ref-list|body|abstract/gi) == null)) {
+                    // $("h2, h3, br", $(sec)).remove();
+                    matches.push($(sec));
+                }
             });
-            console.log(matches);
-            data.fundingStatement = matches[0];
-            data.update();
+            matches.sort(function(a, b) { return a.text().length - b.text().length });
+            $("h2, h3, br", matches[0]).remove();
+            if (matches.length != 0) {
+                this.setFundingStatement(matches[0].html());
+                this.redraw();
+            }
         },
         parseFullXML: function(xml) {
-            data.fundingStatement = $(xml).find("funding-group").text();
-            data.conflictStatement = $.trim($(xml).find("fn[fn-type='conflict']").text());
-            data.update();
+            this.setFundingStatement($(xml).find("funding-group").text());
+            this.setConflictStatement($.trim($(xml).find("fn[fn-type='conflict']").text()));
+            this.redraw();
         }
     };
     
@@ -53,11 +66,11 @@ $(document).ready(function() {
 
     $('.rprt_all').prepend($("<div>", {id: "funding"}));
     $('#funding').css({
-      "color": "red", "font-size":"large", "font-weight":"bold",
+      "color": "red", "font-size":"regular", "font-weight":"bold",
 	  "border": "solid 1px", "padding": "8px"	
     });
     
     // request full text from PMC
-    $.ajax({type:"GET", url:texturl, success: data.parseFullText});
-    $.ajax({type:"GET", url:xmlurl, dataType:"xml", success: data.parseFullXML});
+    $.ajax({type:"GET", url:texturl, success: data.parseFullText, context: data});
+    $.ajax({type:"GET", url:xmlurl, dataType:"xml", success: data.parseFullXML, context: data});
 });
