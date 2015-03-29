@@ -1,21 +1,12 @@
-﻿// Check for PMC full text link
-// Navigate to PMC full text page
-// Get and parse full text XML from OAI
-// https://developer.chrome.com/extensions/xhr need this to do cross-domain requests! e.g. from OAI
-// Get funding-source tag, if exists. This is the name of the organization that funded http://jats.nlm.nih.gov/publishing/tag-library/1.1d2/element/funding-source.html
-// Get funding-statement tag
-// Attempt to get conflict of interest statement
-// On the current Pubmed Abstract page:
-// If funding-source was NIH, have some indicator
-// Add some box to the top of the page with a hover over to display the funding-statement text
-// Add conflict of interest statement, highlighting authors names
-$(document).ready(function() {
+﻿$(document).ready(function() {
     $.extend($.expr[":"], {
         "contains": function(elem, i, match, array) {
             return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
         }
     });
+    
     var getLabelerResults = function(name) {
+        // search fda database for labeler name
         $.get('http://www.accessdata.fda.gov/scripts/cder/ndc/default.cfm', success= function(data, status, xhr) { 
             $.post('http://www.accessdata.fda.gov/scripts/cder/ndc/dsp_searchresult.cfm', { sugg:'LabelerName', ApptName: name, Search: 'Search' }, success=function(response) { 
                 console.log($("strong:contains('No matching records found. Please enter new search criteria.')", $(response)).text()); 
@@ -26,8 +17,33 @@ $(document).ready(function() {
     var data = {
         fundingStatement: "",
         conflictStatement: "",
+        fshow: false,
+        cshow: false,
         redraw: function() {
-            $('#funding').html(this.fundingStatement + '<br>' + this.conflictStatement);
+            div = $('#funding');
+            fhead = $('#fhead', div);
+            chead = $('#chead', div);
+            fdiv = $('#funding #fstatement');
+            cdiv = $('#funding #cstatement');
+            if (this.fundingStatement == "" && this.conflictStatement == "") {
+                fdiv.css('display', 'none');
+                cdiv.css('display', 'none');
+                div.append($("<div id='noresults'>No reported funding or conflict of interest found."));
+            } else {
+                if (this.fundingStatement != "") {
+                    this.fshow = true;
+                    fdiv.html(this.fundingStatement);
+                    fhead.show();
+                    fdiv.show();
+                    $('#noresults', div).hide();
+                }
+                if (this.conflictStatement != "") {
+                    this.cshow = false;
+                    cdiv.html(this.conflictStatement);
+                    chead.show();
+                    $('#noresults', div).hide();
+                }
+            }
         },
         setFundingStatement: function(fs) {
             if (this.fundingStatement == "" && fs) {
@@ -59,10 +75,12 @@ $(document).ready(function() {
             var emptydiv = $('<div></div>').text("");
             fmatches.sort(function(a, b) { return a.text().length - b.text().length });
             cmatches.sort(function(a, b) { return a.text().length - b.text().length });
+            console.log(fmatches.length);
+            console.log(cmatches.length);
             // if top matches overlap, delete the other one
-            if (fmatches[0].text().indexOf(cmatches[0].text()) > -1) {
+            if (fmatches.length != 0 && cmatches.length != 0 && fmatches[0].text().indexOf(cmatches[0].text()) > -1) {
                 cmatches = [emptydiv];
-            } else if (cmatches[0].text().indexOf(fmatches[0].text()) > -1) {
+            } else if (fmatches.length != 0 && cmatches.length != 0 && cmatches[0].text().indexOf(fmatches[0].text()) > -1) {
                 fmatches = [emptydiv];
             }
             
@@ -72,10 +90,14 @@ $(document).ready(function() {
             $("h2, h3, br", cmatches[0]).remove();
             
             if (fmatches.length != 0 && fmatches[0].text().length > 0) {
-                this.setFundingStatement(fmatches[0].html());
+                var buf = fmatches[0];
+                $('*', buf).removeClass();
+                this.setFundingStatement(buf.html());
             }
             if (cmatches.length != 0 && cmatches[0].text().length > 0) {
-                this.setConflictStatement(cmatches[0].html());
+                var buf = cmatches[0];
+                $('*', buf).removeClass();
+                this.setConflictStatement(buf.html());
             }
             this.redraw();
         },
@@ -93,9 +115,31 @@ $(document).ready(function() {
     var xmlurl = 'http://www.pubmedcentral.nih.gov/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:' + texturl.split('/')[3].substring(3) + '&metadataPrefix=pmc';
 
     $('.rprt_all').prepend($("<div>", {id: "funding"}));
+    $('#funding').append($("<h4 id='fhead' style='cursor:pointer'>Funding information [-]</h4>"));
+    $('#funding').append($("<div>", {id: "fstatement"}));
+    $('#funding').append($("<h4 id='chead' style='cursor:pointer'>Conflicts of interest [+]</h4>"));
+    $('#funding').append($("<div>", {id: "cstatement"}));
     $('#funding').css({
       "color": "red", "font-size":"regular", "font-weight":"bold",
 	  "border": "solid 1px", "padding": "8px"	
+    });
+    $('#funding #fhead').click(function () { 
+        $('#funding #fstatement').slideToggle();
+        data.fshow = !data.fshow;
+        if (data.fshow) {
+            $('#funding #fhead').text('Funding information [-]')
+        } else {
+            $('#funding #fhead').text('Funding information [+]')
+        }
+    });
+    $('#funding #chead').click(function () { 
+        $('#funding #cstatement').slideToggle();
+        data.cshow = !data.cshow;
+        if (data.cshow) {
+            $('#funding #chead').text('Conflicts of interest [-]')
+        } else {
+            $('#funding #chead').text('Conflicts of interest [+]')
+        }
     });
     
     // request full text from PMC
