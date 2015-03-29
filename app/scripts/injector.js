@@ -91,12 +91,12 @@
             
             if (fmatches.length != 0 && fmatches[0].text().length > 0) {
                 var buf = fmatches[0];
-                $('*', buf).removeClass();
+                $('*', buf).removeClass().css({"margin": 0});
                 this.setFundingStatement(buf.html());
             }
             if (cmatches.length != 0 && cmatches[0].text().length > 0) {
                 var buf = cmatches[0];
-                $('*', buf).removeClass();
+                $('*', buf).removeClass().css({"margin": 0});
                 this.setConflictStatement(buf.html());
             }
             this.redraw();
