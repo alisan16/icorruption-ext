@@ -4,8 +4,7 @@
   "manifest_version": 2,
   "description": "This extension adds funding and conflict-of-interest information to the abstract page of Pubmed articles (when available)",
   "icons": {
-    "16": "images/icon-16.png",
-    "128": "images/icon-128.png"
+    "48": "images/icon-48.png"
   },
   "default_locale": "en",
   "content_scripts": [
