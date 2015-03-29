@@ -10,7 +10,7 @@
   "default_locale": "en",
   "content_scripts": [
     {
-      "matches": ["http://www.ncbi.nlm.nih.gov/*", "http://www.pubmedcentral.nih.gov/*"],
+      "matches": ["http://www.ncbi.nlm.nih.gov/*", "http://www.pubmedcentral.nih.gov/*", "http://www.accessdata.fda.gov/*"],
       "js": ["scripts/jquery.min.js", "scripts/injector.js"],
       "run_at": "document_end"
     }

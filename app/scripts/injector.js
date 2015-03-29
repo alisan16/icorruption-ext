@@ -15,6 +15,13 @@ $(document).ready(function() {
             return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
         }
     });
+    var getLabelerResults = function(name) {
+        $.get('http://www.accessdata.fda.gov/scripts/cder/ndc/default.cfm', success= function(data, status, xhr) { 
+            $.post('http://www.accessdata.fda.gov/scripts/cder/ndc/dsp_searchresult.cfm', { sugg:'LabelerName', ApptName: name, Search: 'Search' }, success=function(response) { 
+                console.log($("strong:contains('No matching records found. Please enter new search criteria.')", $(response)).text()); 
+            });
+        });
+    };
     
     var data = {
         fundingStatement: "",
@@ -33,23 +40,44 @@ $(document).ready(function() {
             }
         },
         parseFullText: function(html) {
-            // data.fundingStatement = $(html).find("h3:contains('Funding'), h2:contains('Funding')").nextUntil("div.tsec").text()
-            // data.update();
-            var matches = [];
+            // find the shortest section that contains the search term
+            // which is not in the body of the text or the references
+            var fmatches = []; // funding matches
+            var cmatches = []; // conflict matches
             $(".content.article > div .sec", $(html)).each(function(i, sec) {
                 var secid = $(sec).attr('id');
-                var secmatches = $(sec).text().match(/fund(ed|ing|s)|(supported|granted|provided|sponsored) by|financial (|support)/gi);
-                if (secmatches && secmatches.length > 0 && (!secid || secid.match(/ref-list|body|abstract/gi) == null)) {
-                    // $("h2, h3, br", $(sec)).remove();
-                    matches.push($(sec));
+                var secfmatches = $(sec).text().match(/fund(ed|ing|s)|(supported|granted|provided|sponsored) by|financial (|support)/gi);
+                if (secfmatches && secfmatches.length > 0 && (!secid || secid.match(/ref-list|body|abstract/gi) == null)) {
+                    fmatches.push($(sec));
+                }
+                var seccmatches = $(sec).text().match(/disclos|conflict|of interest|competing interest/gi);
+                if (seccmatches && seccmatches.length > 0 && (!secid || secid.match(/ref-list|body|abstract/gi) == null)) {
+                    cmatches.push($(sec));
                 }
             });
-            matches.sort(function(a, b) { return a.text().length - b.text().length });
-            $("h2, h3, br", matches[0]).remove();
-            if (matches.length != 0) {
-                this.setFundingStatement(matches[0].html());
-                this.redraw();
+            
+            var emptydiv = $('<div></div>').text("");
+            fmatches.sort(function(a, b) { return a.text().length - b.text().length });
+            cmatches.sort(function(a, b) { return a.text().length - b.text().length });
+            // if top matches overlap, delete the other one
+            if (fmatches[0].text().indexOf(cmatches[0].text()) > -1) {
+                cmatches = [emptydiv];
+            } else if (cmatches[0].text().indexOf(fmatches[0].text()) > -1) {
+                fmatches = [emptydiv];
             }
+            
+            // clean match
+            // todo: clean classes and/or extraneous wrapping divs
+            $("h2, h3, br", fmatches[0]).remove();
+            $("h2, h3, br", cmatches[0]).remove();
+            
+            if (fmatches.length != 0 && fmatches[0].text().length > 0) {
+                this.setFundingStatement(fmatches[0].html());
+            }
+            if (cmatches.length != 0 && cmatches[0].text().length > 0) {
+                this.setConflictStatement(cmatches[0].html());
+            }
+            this.redraw();
         },
         parseFullXML: function(xml) {
             this.setFundingStatement($(xml).find("funding-group").text());
