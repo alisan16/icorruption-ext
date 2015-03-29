@@ -23,11 +23,23 @@ $(document).ready(function() {
             $('#funding').html(data.fundingStatement + '<br>' + data.conflictStatement);
         },
         parseFullText: function(html) {
-            data.fundingStatement = $($(html).find("h3:contains('Funding'), h2:contains('Funding')").next()[0]).text();
-            data.update();    
+            // data.fundingStatement = $(html).find("h3:contains('Funding'), h2:contains('Funding')").nextUntil("div.tsec").text()
+            // data.update();
+            var matches = [];
+            $(".content.article > div > .sec", $(html)).each(function(i, sec) {
+                var secid = $(sec).attr('id')
+                var secmatches = $(sec).text().match(/funding/gi);
+                if (secmatches && secmatches.length > 0 && secid.match(/ref-list|body|abstract/gi) == null) {
+                    $("h2, h3, br", $(sec)).remove();
+                    matches.push($(sec).html());
+                };
+            });
+            console.log(matches);
+            data.fundingStatement = matches[0];
+            data.update();
         },
         parseFullXML: function(xml) {
-            data.fundingStatement = $(xml).find("funding-statement").text();
+            data.fundingStatement = $(xml).find("funding-group").text();
             data.conflictStatement = $.trim($(xml).find("fn[fn-type='conflict']").text());
             data.update();
         }
