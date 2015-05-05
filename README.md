@@ -4,7 +4,7 @@ This extension fetches conflict-of-interest and industry funding information fro
 Currently works for open-access articles from PubMed Central, which covers “several million articles from several thousands of journals.”  (We will be adding additional coverage in coming weeks. Volunteers welcome!)  If there are no funding or conflicts disclosures accessible for the abstract within PMC, the extension does not modify the PubMed page, so you might not notice any change. 
 
 # Demo
-After installing the Extension (on the Chrome WebStore [here](https://chrome.google.com/webstore/detail/unearth/nlgekenmjhflbaohkglefehfbfdinbmi?hl=en)) , try [this PubMed Central article](http://www.ncbi.nlm.nih.gov/pubmed/25777384).
+After installing the Extension (on the Chrome WebStore [here](https://chrome.google.com/webstore/detail/unearth/nlgekenmjhflbaohkglefehfbfdinbmi?hl=en)) , try [this PubMed Central article](http://www.ncbi.nlm.nih.gov/pubmed/25274181).
 
 
 # About
